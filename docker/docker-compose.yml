@@ -1,0 +1,40 @@
+version: '3'
+name: british-expressions
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: ./docker/api/Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - ../app:/app
+    ports:
+      - "8080:80"
+      - "443:443"
+    environment:
+      - 'RUN:flask run --host=0.0.0.0 --port=80'
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    command: flask run --host=0.0.0.0 --port=80
+    networks:
+      - mynetwork
+    # Infinite loop, to keep it alive, for debugging
+    # command: bash -c "while true; do echo 'sleeping...' && sleep 10; done"
+  db:
+    build:
+      context: ..
+      dockerfile: ./docker/db/Dockerfile
+    volumes:
+      - ../db/data:/var/lib/mysql
+    ports:
+      - "5306:3306"
+      - "33060:33060"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge

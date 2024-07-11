@@ -9,9 +9,11 @@ venv/
 env/
 env_bak/
 
+
 # IDE-specific
 .vscode/
 .idea/
+
 
 # Compiled files
 *.pyc
@@ -22,3 +24,9 @@ env_bak/
 *.log
 logs/
 *.swp
+
+#project config
+config/.env
+db/data/*
+!db/data/.gitkeep
+
