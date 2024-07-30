@@ -26,7 +26,7 @@ logs/
 *.swp
 
 #project config
-config/.env
+docker/.env
 db/data/*
 !db/data/.gitkeep
 
