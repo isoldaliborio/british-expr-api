@@ -11,6 +11,9 @@ sys.path.insert(0, str(parent_dir))
 from app.endpoints import expressions_enpoints
 from app.models import db
 
+# Testing
+from app.controllers.users_controller import delete_user
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -38,31 +41,8 @@ app.config["SECRET_KEY"] = "brie"
 db.init_app(app)
 
 
-def insert_tag(tag_name):
-    from app.models.expressions_models import Tag
-
-    # Check if the tag already exists
-    existing_tag = Tag.query.filter_by(tag=tag_name).first()
-    if existing_tag:
-        return existing_tag  # Return the existing tag
-
-    # Create a new Tag object
-    new_tag = Tag(tag=tag_name)
-
-    # Add the new tag to the session
-    db.session.add(new_tag)
-
-    # Commit the session to persist the changes
-    db.session.commit()
-
-    return new_tag  # Return the newly created tag
-
-
-# Insert a test tag
-with app.app_context():
-    tag = insert_tag("pub")
-    print(f"Inserted tag: {tag.id_tag}, {tag.tag}")
-
+with app.app_context(): 
+   delete_user(db, "isoldaliborio@test.com")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)

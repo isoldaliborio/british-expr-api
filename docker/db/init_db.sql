@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `british_expressions`.`expressions` (
   `created_at` TIMESTAMP NOT NULL,
   `modified_at` TIMESTAMP NOT NULL,
   `user_id` INT NOT NULL,
-  `example_id` INT NOT NULL,
+  `example_id` INT NULL,
   PRIMARY KEY (`expression_id`),
   INDEX `fk_expressions_user1_idx` (`user_id` ASC) VISIBLE,
   INDEX `fk_expressions_examples1_idx` (`example_id` ASC) VISIBLE,

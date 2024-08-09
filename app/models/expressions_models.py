@@ -1,7 +1,7 @@
 from . import db
 
 # Define the Roles model
-class Roles(db.Model):
+class Role(db.Model):
     __tablename__ = "roles"
     __table_args__ = {"schema": "british_expressions"}  # Specify the schema name
 
@@ -9,7 +9,7 @@ class Roles(db.Model):
     name = db.Column(db.String(100), nullable=False, unique=True)
 
 # Define the Users model
-class Users(db.Model):
+class User(db.Model):
     __tablename__ = "users"
     __table_args__ = (
         db.UniqueConstraint("user_id", name="user_id_UNIQUE"),
@@ -26,7 +26,7 @@ class Users(db.Model):
 
 
 # Define the Examples model
-class Examples(db.Model):
+class Example(db.Model):
     __tablename__ = "examples"
     __table_args__ = {"schema": "british_expressions"}  # Specify the schema name
 
@@ -34,7 +34,7 @@ class Examples(db.Model):
     example = db.Column(db.Text, nullable=False)
 
 # Define the Expressions model
-class Expressions(db.Model):
+class Expression(db.Model):
     __tablename__ = "expressions"
     __table_args__ = (
         db.UniqueConstraint("expression_id", name="id_exp_UNIQUE"),
@@ -50,13 +50,13 @@ class Expressions(db.Model):
     example_id = db.Column(db.Integer, db.ForeignKey("british_expressions.examples.example_id"), nullable=False)
 
     # Relationship to tags via a secondary table
-    tags = db.relationship("Tags", secondary="british_expressions.user_tags", back_populates="expressions")
+    tags = db.relationship("Tag", secondary="british_expressions.user_tags", back_populates="expressions")
 
     # Relationship to categories via a secondary table
-    categories = db.relationship("Categories", secondary="british_expressions.categories_expressions", back_populates="expressions")
+    categories = db.relationship("Category", secondary="british_expressions.categories_expressions", back_populates="expressions")
 
 # Define the Categories model
-class Categories(db.Model):
+class Category(db.Model):
     __tablename__ = "categories"
     __table_args__ = {"schema": "british_expressions"}  # Specify the schema name
 
@@ -64,10 +64,10 @@ class Categories(db.Model):
     name = db.Column(db.String(100), nullable=False)
 
     # Relationship to expressions via a secondary table
-    expressions = db.relationship("Expressions", secondary="british_expressions.categories_expressions", back_populates="categories")
+    expressions = db.relationship("Expression", secondary="british_expressions.categories_expressions", back_populates="categories")
 
 # Define the CategoriesExpressions association table
-class CategoriesExpressions(db.Model):
+class CategoryExpression(db.Model):
     __tablename__ = "categories_expressions"
     __table_args__ = {"schema": "british_expressions"}  # Specify the schema name
 
@@ -76,7 +76,7 @@ class CategoriesExpressions(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey("british_expressions.categories.category_id"), nullable=False)
 
 # Define the Tags model
-class Tags(db.Model):
+class Tag(db.Model):
     __tablename__ = "tags"
     __table_args__ = {"schema": "british_expressions"}  # Specify the schema name
 
@@ -84,10 +84,10 @@ class Tags(db.Model):
     name = db.Column(db.String(100), nullable=False)
 
     # Relationship to expressions via a secondary table
-    expressions = db.relationship("Expressions", secondary="british_expressions.user_tags", back_populates="tags")
+    expressions = db.relationship("Expression", secondary="british_expressions.user_tags", back_populates="tags")
 
 # Define the UserTags association table
-class UserTags(db.Model):
+class UserTag(db.Model):
     __tablename__ = "user_tags"
     __table_args__ = {"schema": "british_expressions"}  # Specify the schema name
 
@@ -96,7 +96,7 @@ class UserTags(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("british_expressions.users.user_id"), primary_key=True)
 
 # Define the Favorites association table
-class Favorites(db.Model):
+class Favorite(db.Model):
     __tablename__ = "favorites"
     __table_args__ = {"schema": "british_expressions"}  # Specify the schema name
 
