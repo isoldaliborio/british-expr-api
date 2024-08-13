@@ -54,7 +54,7 @@ class Expression(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("british_expressions.users.user_id"), nullable=False)
     
     # Relationship to Examples
-    # examples = db.relationship("Example", back_populates="expression")
+    examples = db.relationship("Example", back_populates="expression")
 
     # Relationship to tags via a secondary table
     tags = db.relationship("Tag", secondary="british_expressions.user_tags", back_populates="expressions")
