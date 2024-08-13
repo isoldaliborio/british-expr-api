@@ -24,7 +24,6 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey("british_expressions.roles.role_id"), nullable=False)
 
-
 # Define the Examples model
 class Example(db.Model):
     __tablename__ = "examples"
@@ -32,6 +31,12 @@ class Example(db.Model):
 
     example_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     example = db.Column(db.Text, nullable=False)
+    
+    # Foreign key reference to Expression
+    expression_id = db.Column(db.Integer, db.ForeignKey("british_expressions.expressions.expression_id"), nullable=False)
+    
+    # Relationship to Expression
+    expression = db.relationship("Expression", back_populates="examples")
 
 # Define the Expressions model
 class Expression(db.Model):
@@ -47,13 +52,16 @@ class Expression(db.Model):
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     modified_at = db.Column(db.TIMESTAMP, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("british_expressions.users.user_id"), nullable=False)
-    example_id = db.Column(db.Integer, db.ForeignKey("british_expressions.examples.example_id"), nullable=False)
+    
+    # Relationship to Examples
+    # examples = db.relationship("Example", back_populates="expression")
 
     # Relationship to tags via a secondary table
     tags = db.relationship("Tag", secondary="british_expressions.user_tags", back_populates="expressions")
 
     # Relationship to categories via a secondary table
     categories = db.relationship("Category", secondary="british_expressions.categories_expressions", back_populates="expressions")
+
 
 # Define the Categories model
 class Category(db.Model):

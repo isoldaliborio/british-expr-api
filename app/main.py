@@ -12,8 +12,9 @@ from app.endpoints import expressions_enpoints
 from app.models import db
 
 # Testing
-from app.controllers.users_controller import delete_user
-
+# from app.controllers.users_controller import add_new_user
+# from app.controllers.roles_controller import insert_role
+from app.controllers.expressions_controller import add_new_expression
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -41,8 +42,10 @@ app.config["SECRET_KEY"] = "brie"
 db.init_app(app)
 
 
-with app.app_context(): 
-   delete_user(db, "isoldaliborio@test.com")
+with app.app_context():
+    # insert_role(db, "admin")
+    # add_new_user(db, "Edu", "Di Nardo", "edu@test.com", "1234", 1)
+    add_new_expression(db, "Tuk In", "to make (someone, such as a child) secure in bed by tucking the edges of sheets, blankets, etc. under the mattress", 2)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)

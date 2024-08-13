@@ -49,16 +49,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `british_expressions`.`examples`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `british_expressions`.`examples` (
-  `example_id` INT NOT NULL AUTO_INCREMENT,
-  `example` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' NOT NULL,
-  PRIMARY KEY (`example_id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `british_expressions`.`expressions`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `british_expressions`.`expressions` (
@@ -68,18 +58,11 @@ CREATE TABLE IF NOT EXISTS `british_expressions`.`expressions` (
   `created_at` TIMESTAMP NOT NULL,
   `modified_at` TIMESTAMP NOT NULL,
   `user_id` INT NOT NULL,
-  `example_id` INT NULL,
   PRIMARY KEY (`expression_id`),
   INDEX `fk_expressions_user1_idx` (`user_id` ASC) VISIBLE,
-  INDEX `fk_expressions_examples1_idx` (`example_id` ASC) VISIBLE,
   CONSTRAINT `fk_expressions_user1`
     FOREIGN KEY (`user_id`)
     REFERENCES `british_expressions`.`users` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_expressions_examples1`
-    FOREIGN KEY (`example_id`)
-    REFERENCES `british_expressions`.`examples` (`example_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -174,6 +157,23 @@ CREATE TABLE IF NOT EXISTS `british_expressions`.`favorites` (
   CONSTRAINT `fk_favorites_user_tags1`
     FOREIGN KEY (`user_id`)
     REFERENCES `british_expressions`.`user_tags` (`expression_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `british_expressions`.`examples`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `british_expressions`.`examples` (
+  `example_id` INT NOT NULL AUTO_INCREMENT,
+  `example` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' NOT NULL,
+  `expressions_expression_id` INT NOT NULL,
+  PRIMARY KEY (`example_id`),
+  INDEX `fk_examples_expressions1_idx` (`expressions_expression_id` ASC) VISIBLE,
+  CONSTRAINT `fk_examples_expressions1`
+    FOREIGN KEY (`expressions_expression_id`)
+    REFERENCES `british_expressions`.`expressions` (`expression_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

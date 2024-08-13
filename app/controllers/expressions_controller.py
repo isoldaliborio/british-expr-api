@@ -13,21 +13,25 @@ def add_new_expression(db, expression, meaning, user_id):
     :return: The newly created or existing expression
     """ 
     
-    existing_expression = User.query.filter_by(expression=expression).first()
+    existing_expression = Expression.query.filter_by(expression=expression).first()
     if existing_expression:
         return existing_expression
     
     ct = datetime.datetime.now()
-    new_expression = User(
+    new_expression = Expression(
         expression=expression,
         meaning=meaning,
         created_at=ct,
         modified_at=ct,
         user_id=user_id
     )
+    print(new_expression)
 
+    
     db.session.add(new_expression)
     
     db.session.commit()
     
+     #TODO: get the id of the new expression then create a for loop for each example.
+
     return new_expression 
