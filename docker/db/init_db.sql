@@ -1,3 +1,4 @@
+
 -- MySQL Workbench Forward Engineering
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
@@ -36,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `british_expressions`.`users` (
   `email` VARCHAR(200) CHARACTER SET 'utf8' NOT NULL,
   `password` VARCHAR(200) CHARACTER SET 'utf8' NOT NULL,
   `role_id` INT NOT NULL,
+  `active` TINYINT(1) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE,
   INDEX `fk_user_roles1_idx` (`role_id` ASC) VISIBLE,

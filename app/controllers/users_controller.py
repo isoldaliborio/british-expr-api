@@ -1,106 +1,108 @@
+from flask import jsonify
+from flask import Request, Response
+from app.services.users_service import encrypt_password, check_password, object_as_dict
+from flask_jwt_extended import get_jwt_identity
 from app.models.expressions_models import User
+from app.models import db
 
-def add_new_user(db, first_name, last_name, email, password, role_id):
-    """
-    Add a new user to the database. If the user with the given email already exists, return the existing user.
-    
-    :param db: SQLAlchemy database session
-    :param first_name: First name of the user
-    :param last_name: Last name of the user
-    :param email: Email of the user (must be unique)
-    :param password: Password of the user (should be hashed before storing)
-    :param role_id: ID of the role assigned to the user
-    :return: The newly created or existing user
-    """ 
-    
+def add_new_user(request: Request) -> tuple[Response, int]:
+
+    data = request.get_json()
+    email = data.get("email")
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
-        return existing_user
+        return jsonify(message="That email already exists."), 204
+
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+    password = encrypt_password(data.get("password"))
+    role_id = data.get("role_id")
     
     new_user = User(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        password=password,  # TODO: Password should be hashed before storing
+        password=password,
         role_id=role_id
     )
 
     db.session.add(new_user)
     
-    db.session.commit()
-    
-    return new_user 
+    try:
+        db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 404
+
+    return jsonify({"message": "User created successfully."}), 200
 
 
-def get_user(db, email):
-    """
-    Retrieve a user's information from the database using their email.
-    
-    :param db: SQLAlchemy database session
-    :param email: Email of the user to retrieve
-    :return: The user object if found, otherwise None
-    """
-    
-    # Query the database for a user with the given email
-    user = User.query.filter_by(email=email).first()
-    
-    # Return the user object if found, otherwise return None
-    return user
+def get_user(request: Request) -> tuple[Response, int]:
+    data = request.get_json()
+    email = data.get("email")
+    existing_user = User.query.filter_by(email=email).first()
 
-def update_user(db, email, first_name=None, last_name=None, password=None, role_id=None):
-    """
-    Update a user's information in the database based on their email.
-    
-    :param db: SQLAlchemy database session
-    :param email: Email of the user to update (used to identify the user)
-    :param first_name: New first name (optional)
-    :param last_name: New last name (optional)
-    :param password: New password (optional, should be hashed before storing)
-    :param role_id: New role ID (optional)
-    :return: The updated user object if found and updated, otherwise None
-    """
-    
-    # Query the database for the user with the given email
+    if not existing_user:
+        return jsonify(message="email does not exist."), 404
+
+    return jsonify(object_as_dict(existing_user)), 200
+
+
+def update_user(request: Request) -> tuple[Response, int]:
+   
+    data = request.get_json()
+    email = data.get("email")
+
+    if not email:
+        return jsonify(message="email not provided."), 204
+
     user = User.query.filter_by(email=email).first()
     
     if not user:
-        return None  # User not found, return None
-    
-    # Update the user's information if new values are provided
-    if first_name:
-        user.first_name = first_name
-    if last_name:
-        user.last_name = last_name
-    if password:
-        user.password = password  # Note: Password should be hashed before storing
-    if role_id:
-        user.role_id = role_id
-    
-    # Commit the session to persist the changes
+        return jsonify(message="User not found."), 404
+
+    if data.get("first_name"):
+        user.first_name = data.get("first_name")
+    if data.get("last_name"):
+        user.last_name = data.get("last_name")
+    if data.get("password"):
+        user.password = encrypt_password(data.get("password"))
+    if data.get("role_id"):
+        user.role_id = data.get("role_id")
+
     db.session.commit()
     
-    return user  # Return the updated user object
+    return jsonify(object_as_dict(user)), 200 
 
 
-def delete_user(db, email):
-    """
-    Delete a user from the database based on their email.
+def delete_user(request: Request) -> tuple[Response, int]:
+    data = request.get_json()
+    email = data.get("email")
     
-    :param db: SQLAlchemy database session
-    :param email: Email of the user to delete (used to identify the user)
-    :return: True if the user was deleted, False if the user was not found
-    """
-    
-    # Query the database for the user with the given email
     user = User.query.filter_by(email=email).first()
     
     if not user:
-        return False  # User not found, return False
+        return jsonify(message="User not found."), 404
     
-    # Delete the user from the session
-    db.session.delete(user)
+    user.active = False
     
-    # Commit the session to persist the changes
     db.session.commit()
     
-    return True  # Return True to indicate successful deletion
+    return jsonify(message="User deleted successfully."), 200
+
+
+def reactivate_user(request: Request) -> tuple[Response, int]:
+    data = request.get_json()
+    email = data.get("email")
+    
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+        return jsonify(message="User not found."), 404
+    
+    user.active = True
+    
+    db.session.commit()
+    
+    return jsonify(message="User reactivated successfully."), 200

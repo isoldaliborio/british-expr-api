@@ -1,34 +1,24 @@
+from flask import jsonify
+from flask import Request, Response
 from app.models.expressions_models import Role
+from app.services.users_service import object_as_dict
+from app.models import db
 
-def insert_role(db, role_name):
-
-    # Check if the role already exists
-    existing_role = Role.query.filter_by(name=role_name).first()
+def add_new_role(request: Request) -> tuple[Response, int]:
+    data = request.get_json()
+    name = data.get("name")
+    existing_role = Role.query.filter_by(name=name).first()
     if existing_role:
-        return existing_role  # Return the existing role
+        return jsonify(message="That role already exists."), 204
 
-    # Create a new Role object
-    new_role = Role(name=role_name)
 
-    # Add the new role to the session
+    new_role = Role(
+        name=name
+    )
+
     db.session.add(new_role)
 
-    # Commit the session to persist the changes
     db.session.commit()
 
-    return new_role  # Return the newly created role
+    return jsonify(object_as_dict(new_role)), 200 
 
-
-def delete_role(db, role_name):
-    # Check if the role already exists
-    role_to_delete = Role.query.filter_by(name=role_name).first()
-    if not role_to_delete:
-        return False  
-
-    # Delete the new role to the session
-    db.session.delete(role_to_delete)
-
-    # Commit the session to persist the changes
-    db.session.commit()
-
-    return True

@@ -1,15 +1,10 @@
 from flask import Blueprint
 from flask import request, Response
+from app.controllers.expressions_controller import add_new_expression
 
 bp = Blueprint("expressions", __name__)
 
 
-@bp.route("/expressions/test")
-def add_expression_route():
-    return "ciao bella"
-
-
-@bp.route('/add_tag/<restaurant>')
-def add_tag(tag_name):
-    tag = insert_tag(tag_name)
-    return f"Inserted tag: {tag.id_tag}, {tag.tag}"
+@bp.route("/expressions/", methods=["POST"])
+def add_new_expression_route():
+    return add_new_expression(request)

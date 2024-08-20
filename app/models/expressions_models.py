@@ -23,6 +23,7 @@ class User(db.Model):
     email = db.Column(db.String(200), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey("british_expressions.roles.role_id"), nullable=False)
+    active = db.Column(db.Boolean, nullable=False, default=True)
 
 # Define the Examples model
 class Example(db.Model):
@@ -33,7 +34,7 @@ class Example(db.Model):
     example = db.Column(db.Text, nullable=False)
     
     # Foreign key reference to Expression
-    expression_id = db.Column(db.Integer, db.ForeignKey("british_expressions.expressions.expression_id"), nullable=False)
+    expressions_expression_id = db.Column(db.Integer, db.ForeignKey("british_expressions.expressions.expression_id"), nullable=False)
     
     # Relationship to Expression
     expression = db.relationship("Expression", back_populates="examples")
