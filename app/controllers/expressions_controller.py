@@ -48,3 +48,24 @@ def add_examples(expression_id, examples):
     return 
 
 
+def update_expression(request: Request) -> tuple[Response, int]:
+    
+    data = request.get_json()
+    expression_id = data.get("expression_id")
+    existing_expression = Expression.query.filter_by(expression_id=expression_id).first()
+
+    if not existing_expression:
+        return jsonify(message="Expression not found."), 404
+
+    examples = data.get("examples")
+
+    if data.get("expression"):
+        existing_expression.expression = data.get("expression")
+    if data.get("meaning"):
+        existing_expression.meaning = data.get("meaning")
+    
+    add_examples(expression_id, examples)
+
+    db.session.commit()
+    
+    return jsonify(mesage="Expression updated successfully."), 200 
